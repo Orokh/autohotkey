@@ -3,32 +3,20 @@
 ; Load library
 #Include fancywm.lib.ahk
 
+InstallKeybdHook
+
+; Disable Capslock by default
+; Double-tap to switch state
+
 CapsLock::{
-    try {
-        ; Wait for Capslock to be released
-        KeyWait "CapsLock"
-        ; and pressed again within 0.2 seconds
-        KeyWait "CapsLock", "D T0.2"
+    if (A_ThisHotkey == A_PriorHotkey && A_TimeSincePriorHotkey < 300) {
+        SetCapsLockState !GetKeyState("CapsLock", "T")
     }
-    catch Error as err {
-        return
-    }
-    else {
-        if (A_PriorKey = "CapsLock") {
-            SetCapsLockState !GetKeyState("CapsLock", "T")
-        }
-    }
-
-    return
 }
-
-; Force capslock into a modifying key.
-
-*CapsLock:: return
 
 ; Add Capslock as modifier for every keybind below
 
-#HotIf GetKeyState("CapsLock","P")
+#HotIf GetKeyState("CapsLock", "P")
 
 ; Media management
 
@@ -37,6 +25,17 @@ End:: Media_Next
 Space:: Media_Play_Pause
 PgDn:: Volume_Down
 PgUp:: Volume_Up
+
+; Misc
+
++x:: {
+    Send "!{f4}"
+    return
+}
+
+; ###########
+; # FancyWM #
+; ###########
 
 ; Focus desktop
 
@@ -80,3 +79,5 @@ Enter::Promote()
 s::CreateLayout("Stack")
 v::CreateLayout("Vertical")
 +v::CreateLayout("Horizontal")
+
+#HotIf
